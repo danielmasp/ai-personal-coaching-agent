@@ -1,53 +1,75 @@
 # AI Personal Coaching Agent
 
-**Stateful coaching agent with persistent memory and structured actions**
+**A stateful coaching agent with persistent memory, bounded context, personal metrics, and structured actions.**
 
-Personal project developed in Pittsburgh from December 2025 to March 2026.
+This repository contains a functional reconstruction of the personal project developed in Pittsburgh from December 2025 to March 2026. The implementation focuses on the architecture and capabilities documented in the project description without claiming production users or outcomes.
 
-## Overview
+## What it does
 
-The agent stores and retrieves user context — including goals and activity history — across sessions so it can reason over past data instead of treating each conversation as isolated.
-
-## Core Capabilities
-
-- Maintains a persistent memory layer for user goals and activity history.
-- Ingests personal metrics and computes weekly progress.
-- Summarizes historical context before sending it to the model, keeping token usage bounded as history grows.
-- Produces structured actions including progress summaries, goal adjustments, and pattern alerts.
-- Parses and applies those actions programmatically instead of returning only free-text replies.
-- Provides a full-stack React application deployed on Vercel.
-- Uses the Claude API as the reasoning layer.
+- Stores goals, activity metrics, and coaching history across browser sessions
+- Computes current-week progress and week-over-week trends
+- Builds a bounded context window from summarized goals and recent history
+- Sends model requests through a server route so API credentials never reach the browser
+- Parses three structured action types: progress summaries, goal adjustments, and pattern alerts
+- Falls back to deterministic local coaching when no Anthropic API key is configured
+- Provides a responsive React dashboard ready for Vercel
 
 ## Architecture
 
 ```mermaid
-flowchart TD
-    A[Goals and activity history] --> B[Persistent memory]
-    C[Personal metrics] --> D[Weekly progress pipeline]
-    B --> E[Summarized bounded context]
-    D --> E
+flowchart LR
+    A[Goals + metrics] --> B[Persistent memory]
+    B --> C[Weekly analytics]
+    C --> D[Bounded context]
+    D --> E[Vercel API route]
     E --> F[Claude API]
-    F --> G[Structured actions]
-    G --> H[React application]
-    G --> B
+    F --> G[Structured action]
+    G --> A
 ```
 
-## Structured Actions
+The browser stores the personal memory layer in `localStorage`. Before every coaching request, the application derives weekly analytics and limits context to 12 recent activity entries and eight messages. The server accepts only that compact context and returns one validated action object.
 
-The application handles three documented action categories:
+## Structured action contract
 
-- Progress summaries
-- Goal adjustments
-- Pattern alerts
+```json
+{
+  "type": "progress_summary | goal_adjustment | pattern_alert",
+  "title": "Short action title",
+  "message": "Specific coaching response",
+  "payload": {}
+}
+```
 
-## Technology
+## Run locally
 
-- **Application:** Full-stack React
-- **Deployment:** Vercel
-- **Reasoning layer:** Claude API
-- **Data:** Persistent storage and structured personal-metrics pipeline
-- **Concepts:** AI agents, persistent memory, bounded context, and structured outputs
+```bash
+npm install
+npm run dev
+```
 
-## Repository Status
+The dashboard works without credentials using the local fallback. To enable Claude reasoning, copy `.env.example` to `.env.local`, add `ANTHROPIC_API_KEY`, and run through the Vercel development environment.
 
-This repository currently presents the project's verified architecture and capabilities. The application source and deployment configuration are being organized for a complete public release.
+## Verify
+
+```bash
+npm test
+npm run check
+npm run build
+```
+
+## Project structure
+
+```text
+api/coach.js             Vercel server route and Claude integration
+src/App.jsx              Goals, metrics, chat, and structured actions
+src/lib/analytics.js     Weekly progress and trend calculations
+src/lib/context.js       Bounded-context builder and local fallback
+src/lib/memory.js        Persistent browser memory
+src/styles.css           Responsive interface
+analytics.test.js        Unit tests for weekly progress calculations
+context.test.js          Unit tests for bounded-context behavior
+```
+
+## Privacy and scope
+
+The MVP stores personal data locally and does not require an account. When Claude is configured, only the bounded context shown by the interface is sent through the server route. This public version is a portfolio reconstruction of the documented project architecture, not a production health or medical service.
