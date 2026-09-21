@@ -1,58 +1,53 @@
 # AI Personal Coaching Agent
 
-**Stateful full-stack coaching application with persistent memory and structured AI actions**
+**Stateful coaching agent with persistent memory and structured actions**
+
+Personal project developed in Pittsburgh from December 2025 to March 2026.
 
 ## Overview
 
-Most conversational assistants treat every session as an isolated interaction. This project was built to preserve meaningful user context — including goals, activity history, and progress — so the coaching agent can reason over past data and produce consistent, useful guidance over time.
+The agent stores and retrieves user context — including goals and activity history — across sessions so it can reason over past data instead of treating each conversation as isolated.
 
 ## Core Capabilities
 
-- Stores and retrieves user goals, activity history, and coaching context across sessions.
-- Ingests personal metrics and computes weekly progress summaries.
-- Compresses historical data into bounded context so token usage remains controlled as history grows.
-- Produces structured actions such as progress summaries, goal adjustments, and pattern alerts.
-- Parses and applies model outputs programmatically instead of relying only on free-text responses.
-- Provides a full-stack React interface deployed through Vercel.
+- Maintains a persistent memory layer for user goals and activity history.
+- Ingests personal metrics and computes weekly progress.
+- Summarizes historical context before sending it to the model, keeping token usage bounded as history grows.
+- Produces structured actions including progress summaries, goal adjustments, and pattern alerts.
+- Parses and applies those actions programmatically instead of returning only free-text replies.
+- Provides a full-stack React application deployed on Vercel.
 - Uses the Claude API as the reasoning layer.
 
 ## Architecture
 
 ```mermaid
 flowchart TD
-    A[User metrics and goals] --> B[React application]
-    B --> C[Application services]
-    C --> D[Persistent storage]
-    D --> E[Context builder]
+    A[Goals and activity history] --> B[Persistent memory]
+    C[Personal metrics] --> D[Weekly progress pipeline]
+    B --> E[Summarized bounded context]
+    D --> E
     E --> F[Claude API]
-    F --> G[Structured coaching actions]
+    F --> G[Structured actions]
+    G --> H[React application]
     G --> B
-    G --> D
 ```
 
-## Design Principles
+## Structured Actions
 
-### Persistent, not stateless
+The application handles three documented action categories:
 
-The agent retrieves relevant historical context before responding, allowing recommendations to reflect previous goals and activity.
-
-### Structured, not only conversational
-
-Model responses follow defined action formats that the application can validate, parse, and apply.
-
-### Bounded context
-
-Long-term history is summarized before being sent to the model, preventing prompt size from growing without limit.
+- Progress summaries
+- Goal adjustments
+- Pattern alerts
 
 ## Technology
 
-- **Frontend:** React, JavaScript, HTML/CSS
-- **Application:** Node.js and structured data pipelines
-- **AI:** Claude API
-- **Storage:** Persistent user and activity data
+- **Application:** Full-stack React
 - **Deployment:** Vercel
-- **Concepts:** AI agents, memory systems, structured outputs, progress analytics
+- **Reasoning layer:** Claude API
+- **Data:** Persistent storage and structured personal-metrics pipeline
+- **Concepts:** AI agents, persistent memory, bounded context, and structured outputs
 
 ## Repository Status
 
-This repository is the public documentation release of the project. The application source, configuration, and deployment instructions are currently being consolidated for a complete public release.
+This repository currently presents the project's verified architecture and capabilities. The application source and deployment configuration are being organized for a complete public release.
